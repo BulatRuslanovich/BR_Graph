@@ -1,65 +1,57 @@
 namespace BR_Graph {
     public class Graph {
-		private List<Vertex> Vertexes = new List<Vertex>();
-		private List<Edge> Edges = new List<Edge>();
-		public int VertexCount => Vertexes.Count;
+        private List<Vertex> Vertexes = new List<Vertex>();
+        private List<Edge> Edges = new List<Edge>();
+        public int VertexCount => Vertexes.Count;
         public int EdgeCount => Edges.Count;
 
-		public void AddVertex(Vertex vertex) {
-			Vertexes.Add(vertex);
-		}
-		public void AddEdge(Vertex from, Vertex to) {
-			var edge = new Edge(from, to);
-			Edges.Add(edge);
-		}
+        public void AddVertex(Vertex vertex) {
+            Vertexes.Add(vertex);
+        }
+        public void AddEdge(Vertex from, Vertex to) {
+            var edge = new Edge(from, to);
+            Edges.Add(edge);
+        }
 
+        public int[,] GetMatrix() {
+            var matrix = new int[VertexCount, VertexCount];
 
+            foreach (var edge in Edges) {
+                var row = edge.From.Number - 1;
+                var col = edge.To.Number - 1;
 
-		public int[,] GetMatrix() {
-			var matrix = new int[VertexCount, VertexCount];
+                matrix[row, col] = edge.Weight;
+            }
 
-			foreach (var edge in Edges) {
-				var row = edge.From.Number - 1;
-				var col = edge.To.Number - 1;
+            return matrix;
+        }
 
-				matrix[row, col] = edge.Weight;
-			}
+        public List<Vertex> GetVertexLists(Vertex vertex) {
+            var result = new List<Vertex>();
 
-			return matrix;
-		}
+            foreach (var edge in Edges) {
+                if (edge.From == vertex) {
+                    result.Add(edge.To);
+                }
+            }
 
-		public List<Vertex> GetVertexLists(Vertex vertex) {
-			var result = new List<Vertex>();
+            return result;
+        }
 
-			foreach (var edge in Edges)
-			{
-				if (edge.From == vertex) {
-					result.Add(edge.To);
-				}
-			}
+        public bool Wave(Vertex start, Vertex finish) {
+            var list = new List<Vertex> { start };
 
-			return result;
-		}
+            for (int i = 0; i < list.Count; i++) {
+                var vertex = list[i];
 
-		public bool Wave(Vertex start, Vertex finish) {
-			var list = new List<Vertex>
-			{
-				start
-			};
+                foreach (var v in GetVertexLists(vertex)) {
+                    if (!list.Contains(v)) {
+                        list.Add(v);
+                    }
+                }
+            }
 
-			for (int i = 0; i < list.Count; i++)
-			{
-				var vertex = list[i];
-
-				foreach (var v in GetVertexLists(vertex))
-				{
-					if (!list.Contains(v)) {
-						list.Add(v);
-					}
-				}
-			}
-
-			return list.Contains(finish);
-		}
+            return list.Contains(finish);
+        }
     }
 }
